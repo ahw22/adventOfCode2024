@@ -1,16 +1,22 @@
 package day1;
 
 import java.io.File;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-    static ArrayList<Integer> list1 = new ArrayList<>();
-    static ArrayList<Integer> list2 = new ArrayList<>();
+    static List<Integer> list1 = new ArrayList<>();
+    static List<Integer> list2 = new ArrayList<>();
 
     public static void main(String[] args) {
         readInputFile();
-        /* Part One:
+        partOne();
+        partOneWithStreams();
+        partTwo();
+    }
+
+    private static void partOne() {
         list1.sort(null);
         list2.sort(null);
         int distance = 0;
@@ -22,10 +28,9 @@ public class Main {
             distance += difference;
         }
         System.out.println(distance); //1223326
-         */
-        //Part two:
-        list1.sort(null);
-        list2.sort(null);
+    }
+
+    private static void partTwo() {
         int similarity = 0;
         for (int n : list1) {
             int counter = 0;
@@ -47,13 +52,12 @@ public class Main {
                 parseLine(line);
             }
             fileReader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception _) {
         }
     }
 
     private static void parseLine(String line) {
-        String[] parts = line.split("   ");
+        String[] parts = line.split(" {3}");
         list1.add(Integer.parseInt(parts[0]));
         list2.add(Integer.parseInt(parts[1]));
     }
