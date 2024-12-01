@@ -1,9 +1,8 @@
 package day1;
 
 import java.io.File;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class Main {
     static List<Integer> list1 = new ArrayList<>();
@@ -12,7 +11,23 @@ public class Main {
     public static void main(String[] args) {
         readInputFile();
         partOne();
+        partOneWithStreams();
         partTwo();
+        partTwoWithStreams();
+    }
+
+    private static void partOneWithStreams() {
+        int difference = IntStream.range(0, list1.size())
+                .map(i -> Math.abs(list1.get(i) - list2.get(i)))
+                .sum();
+        System.out.println(difference);
+    }
+
+    private static void partTwoWithStreams() {
+        int result = list1.stream()
+                .mapToInt(num -> Collections.frequency(list2, num) * num)
+                .sum();
+        System.out.println(result);
     }
 
     private static void partOne() {
