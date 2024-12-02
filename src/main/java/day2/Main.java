@@ -1,60 +1,71 @@
 package day2;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.IntStream;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.lang.Math.abs;
+import static java.util.Arrays.stream;
+import static java.util.stream.IntStream.range;
 
 public class Main {
-        static int validLines = 0;
+    public static void main(String[] args) throws Exception {
+        // Read the contents of the data file
+        String data = new String(Files.readAllBytes(Paths.get("src/main/java/day2/data.txt")));
 
-    public static void main(String[] args) {
-        Path filePath = Paths.get("src/main/java/day2/data.txt");
-        List<Integer> integerList = new ArrayList<>();
+        // Split the data into lines
+        String[] lines = data.split("\n");
 
-        try {
-            Files.lines(filePath)
-                    .forEach(line -> {
-                        int[] numbers = Arrays.stream(line.trim().split(" "))
-                                .mapToInt(Integer::parseInt)
-                                .toArray();
-                        if (isValid(numbers)) {
-                            System.out.println("order is valid");
-                            validLines++;
-                        }
-                    });
-        } catch (IOException _) {
-        }
-        System.out.println(validLines);
+        // Calculate the number of safe reports for part 1 and part 2
+        long part1Count = stream(lines)
+                .mapToLong(line -> part1(line))
+                .sum();
+        long part2Count = stream(lines)
+                .mapToLong(line -> part2(line))
+                .sum();
+
+        // Print the results
+        System.out.println("Part 1: " + part1Count); //should be 314
+        System.out.println("Part 2: " + part2Count); //should be 373
     }
 
-    private static boolean isValid(int[] array) {
-        //check if it is in descending order
-        int counter = 0;
-        for (int i = 1; i < array.length; i++) {
-            //smaller than index before && difference to index before smaller 3 && larger than 1
-            int difference = array[i-1] - array[i];
-            if (array[i] < array[i - 1] && ((difference <= 3) && (difference >= 1))) {
-                counter++;
-            }
-        }
-        //System.out.println("Counter descending is " + counter);
-        if (counter == array.length - 1) return true;
-        counter = 0;
-        //check if it is in ascending order
-        for (int i = 1; i < array.length; i++) {
-            int difference = array[i] - array[i - 1];
-            if (array[i] > array[i - 1] && ((difference <= 3) && (difference >= 1))) {
-                counter++;
-            }
-        }
-        //System.out.println("Counter ascending is " + counter);
-        if (counter == array.length - 1) return true;
-        return false;
+    static long part1(String input) {
+        return stream(input.split("\n"))
+                .map(line -> stream(line.trim().split(" ")).map(Integer::parseInt).toList())
+                .filter(report -> isSafe(report, false))
+                .count();
     }
+
+    static long part2(String input) {
+        return stream(input.split("\n"))
+                .map(line -> stream(line.trim().split(" ")).map(Integer::parseInt).toList())
+                .filter(report -> isSafe(report, true))
+                .count();
+    }
+
+    private static boolean isSafe(List<Integer> report, boolean useDampener) {
+        Boolean isIncreasing = null;
+        Set<Integer> faultyIndexes = new HashSet<>();
+        for (var i = 0; i < report.size() - 1; i++) {
+            var diff = report.get(i + 1) - report.get(i);
+            if (abs(diff) > 3 || diff == 0 || (isIncreasing != null && diff > 0 != isIncreasing)) {
+                if (useDampener) {
+                    faultyIndexes.add(i);
+                    faultyIndexes.add(i + 1);
+                } else {
+                    return false;
+                }
+            } else if (isIncreasing == null) {
+                isIncreasing = diff > 0;
+            }
+        }
+        return faultyIndexes.isEmpty() || faultyIndexes.stream()
+                .map(idx -> range(0, report.size()).filter(i -> i != idx).mapToObj(report::get).toList())
+                .anyMatch(filteredReport -> isSafe(filteredReport, false));
+    }
+
+
 }
