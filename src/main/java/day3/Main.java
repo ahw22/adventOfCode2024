@@ -21,14 +21,14 @@ public class Main {
 
     private static void cleanInput(List<String> matches, List<String> cleanList) {
         boolean skip = false;
-        for (int i = 0; i < matches.size(); i++) {
-            if (matches.get(i).equals("don't()")) {
+        for (String match : matches) {
+            if (match.equals("don't()")) {
                 skip = true;
-            } else if (matches.get(i).equals("do()")) {
+            } else if (match.equals("do()")) {
                 skip = false;
             } else {
                 if (!skip) {
-                    cleanList.add(matches.get(i));
+                    cleanList.add(match);
                 }
             }
         }
