@@ -24,17 +24,17 @@ public class Main {
     public static void main(String[] args) {
         String filePath = "src/main/java/day6/test.txt";
         readFile(filePath);
-        drawMap();
 
-        mapLength = map.getFirst().length();
-        mapHeight = map.size();
+        mapLength = map.getFirst().length()-1;
+        mapHeight = map.size()-1;
 
         getStartingIndex();
-        navigateMap();
-        drawMap();
+        do drawMap();
+        while (navigateMap());
+
     }
 
-    private static void navigateMap() {
+    private static boolean navigateMap() {
         //0 = row 1 = index
         int[] nextMove = {row, index};
         switch (currentDirection) {
@@ -44,7 +44,7 @@ public class Main {
             case RIGHT -> nextMove[1] = index + 1;
         }
         if (nextMove[0] < 0 || nextMove[0] > mapHeight || nextMove[1] < 0 || nextMove[1] > mapLength) {
-            return;
+            return false;
         }
         if (map.get(nextMove[0]).charAt(nextMove[1]) == '#') {
             switch (currentDirection) {
@@ -55,19 +55,24 @@ public class Main {
             }
         } else {
             //move one space in currentDirection and change current pos to new pos
+            //System.out.println("Going " + currentDirection + " next Move is Row " + nextMove[0] + " Index " + nextMove[1]);
             String currentLine = map.get(row);
+            //System.out.println("CurrentLine: " + currentLine);
             char[] tempArray = currentLine.toCharArray();
-            tempArray[nextMove[1]] = 'X';
-            currentLine = Arrays.toString(tempArray);
+            tempArray[index] = 'X';
+            currentLine = String.copyValueOf(tempArray);
             map.set(row, currentLine);
 
             String nextLine = map.get(nextMove[0]);
+            //System.out.println("NextLine" + nextLine);
             tempArray = nextLine.toCharArray();
             tempArray[nextMove[1]] = '^';
-            nextLine = Arrays.toString(tempArray);
-            map.set(nextMove[1]+ 1, nextLine);
-
+            nextLine = String.copyValueOf(tempArray);
+            map.set(nextMove[0], nextLine);
+            row = nextMove[0];
+            index = nextMove[1];
         }
+        return true;
     }
 
     private static void getStartingIndex() {
