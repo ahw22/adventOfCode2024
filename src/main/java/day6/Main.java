@@ -22,16 +22,27 @@ public class Main {
     static Direction currentDirection = Direction.UP;
 
     public static void main(String[] args) {
-        String filePath = "src/main/java/day6/test.txt";
+        String filePath = "src/main/java/day6/data.txt";
         readFile(filePath);
 
         mapLength = map.getFirst().length()-1;
         mapHeight = map.size()-1;
 
         getStartingIndex();
-        do drawMap();
         while (navigateMap());
+        countPathLength();
+    }
 
+    private static void countPathLength() {
+        int length = 0;
+        for (String line : map) {
+            for (char c : line.toCharArray()) {
+                if (c == 'X') {
+                    length++;
+                }
+            }
+        }
+        System.out.println("Length is: " + (length + 1));
     }
 
     private static boolean navigateMap() {
